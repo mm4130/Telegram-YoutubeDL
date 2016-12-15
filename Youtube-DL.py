@@ -60,6 +60,7 @@ def sendVideo(chat_id, file_name):
 	data = {'chat_id' : chat_id}
 	r = requests.post(url, files=files, data=data)
 	print(r.status_code, r.reason, r.content)
+    os.system('heroku restart')
 
 def sendAudio(chat_id, file_name):
 	url = "https://api.telegram.org/bot%s/sendAudio"%(TOKEN)
@@ -71,6 +72,7 @@ def sendAudio(chat_id, file_name):
 	data = {'chat_id' : chat_id}
 	r = requests.post(url, files=files, data=data)
 	print(r.status_code, r.reason, r.content)
+    os.system('heroku restart')
 
 bot = telepot.Bot(TOKEN)
 bot.message_loop(handle)
