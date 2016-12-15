@@ -25,9 +25,7 @@ def handle(msg):
     		soup=BS(r.text, "html.parser")
     		title = soup.title.string
     		title = title.split(' - YouTube')[0]
-    		title = title.split(' |')[0]
-            title = title.split(' (')[0]
-            title = title.strip()
+    		title = title.split(' |')[0].split('(')[0].strip()
     		title = title.replace(' ', '_')
     		print title
     		flag_URL = 1
