@@ -5,7 +5,7 @@ import telepot
 import requests
 from bs4 import BeautifulSoup as BS
 
-TOKEN = {INSERT ACCESS TOKEN}
+TOKEN = "322697558:AAHvhQKphdRMQ8bPnkAY9aAOcu_Vn4tgptQ"
 
 def handle(msg):
     content_type, chat_type, chat_id = telepot.glance(msg)
@@ -22,10 +22,10 @@ def handle(msg):
     	if text.startswith('https://') or text.startswith('www.') or text.startswith('youtu'):
     		url = text
     		r = requests.get(url)
-    		soup=BS(r.text, "html.parser")
+    		soup = BS(r.text, "html.parser")
     		title = soup.title.string
     		title = title.split(' - YouTube')[0]
-    		title = title.split(' |')[0].split('(')[0].strip()
+    		title = title.split('|')[0].split('(')[0].split('.')[0].strip()
     		title = title.replace(' ', '_')
     		print title
     		flag_URL = 1
