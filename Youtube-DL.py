@@ -42,7 +42,6 @@ def handle(msg):
     	bot.sendMessage(chat_id, 'Please wait while we fetch the file for you. Video files can be heavy, we get the best for you. Hold tight!')
     	sendVideo(chat_id, title+'.mp4')
     	os.system('rm '+title+'.mp4')
-        os.system('heroku restart')
 
     elif flag_AUDIO == 1 :
     	cmd = 'youtube-dl -f \'bestaudio/best\' --extract-audio --audio-format mp3 --output \"' + title + '.mp3\" ' + url
@@ -50,7 +49,6 @@ def handle(msg):
     	bot.sendMessage(chat_id, 'Please wait while we fetch the audio file for you.')
     	sendAudio(chat_id, title+'.mp3')
         os.system('rm '+title+'.mp3')
-        os.system('heroku restart')
 
 def sendVideo(chat_id, file_name):
 	url = "https://api.telegram.org/bot%s/sendVideo"%(TOKEN)
