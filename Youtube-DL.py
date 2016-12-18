@@ -3,9 +3,9 @@ import os
 import time
 import telepot
 import requests
-from bs4 import BeautifulSoup as BS
+import pafy
 
-TOKEN = "322697558:AAHvhQKphdRMQ8bPnkAY9aAOcu_Vn4tgptQ"
+TOKEN = "263037647:AAGhrgr1vi9GheiC_Je90STYE67ChiT_ZvA"
 
 def handle(msg):
     content_type, chat_type, chat_id = telepot.glance(msg)
@@ -15,40 +15,37 @@ def handle(msg):
     
     order = msg['text'].split(' ')
     title = ''
+    url = ''
     flag_URL = 0
+    flag_VIDEO = 0
 
     for text in order:
-        if text.startswith('https://') or text.startswith('www.') or text.startswith('youtu'):
-            url = text
-            r = requests.get(url)
-            soup=BS(r.text, "html.parser")
-            title = soup.title.string
-            title = title.split(' - YouTube')[0]
-            title = title.split('|')[0].split('(')[0].split('.')[0].strip()
-            title = title.replace(' ', '_').replace('\'', '')
-            print title
-            flag_URL = 1
+    	if text.startswith('https://') or text.startswith('www.') or text.startswith('youtu'):
+    		url = text
+    		flag_URL = 1
+    	elif text.lower().startswith('video'):
+    		flag_VIDEO = 1
 
     if flag_URL == 0:
-        bot.sendMessage(chat_id, 'Please enter a video link to download.')
+    	bot.sendMessage(chat_id, 'Please enter a video link to download.')
 
-    else :
-        cmd = 'youtube-dl --extract-audio --audio-format mp3 --audio-quality 0 --output \"' + title + '.mp3\" ' + url
-        os.system(cmd)
-        bot.sendMessage(chat_id, 'Please wait while we fetch the audio file for you.')
-        sendAudio(chat_id, title+'.mp3')
-        os.system('rm '+title+'.mp3')
+    else:
+        video = pafy.new(url)
+        best = video.getbest()
+        message = video.title + '\t(' + video.duration + ')'
+        bot.sendMessage(chat_id, message)
+        if flag_VIDEO == 1:
+            r = requests.get('http://tinyurl.com/api-create.php?url=' + best.url)
+            message = 'Download Video: ' + str(r.text)
+            bot.sendMessage(chat_id, message)
 
-def sendAudio(chat_id, file_name):
-    url = "https://api.telegram.org/bot%s/sendAudio"%(TOKEN)
-    try:
-        files = {'audio': open(file_name, 'rb')}
-    except:
-        bot.sendMessage(chat_id, 'There seems to be an error with your message. Please check the URL again!')
-        return
-    data = {'chat_id' : chat_id}
-    r = requests.post(url, files=files, data=data)
-    print(r.status_code, r.reason, r.content)
+        else :
+            bestaudio = video.getbestaudio(preftype="m4a")
+            r = requests.get('http://tinyurl.com/api-create.php?url=' + bestaudio.url)
+            message = 'Download Audio: ' + str(r.text)
+            bot.sendMessage(chat_id, message)
+            message = 'IMPORTANT: After downloading, rename the file to (anyname).m4a.\nNOTE: You could also save in .mp3 extension, but m4a provides better quality!'
+            bot.sendMessage(chat_id, message)
 
 bot = telepot.Bot(TOKEN)
 bot.message_loop(handle)
